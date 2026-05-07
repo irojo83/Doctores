@@ -1,0 +1,1960 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Doctor Digital — Tu consultorio, visible para todos</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --blue:        #1a5fcb;
+      --blue-dark:   #0d3d8a;
+      --blue-mid:    #2471e0;
+      --blue-light:  #e8f0fc;
+      --teal:        #0bb5ae;
+      --teal-dark:   #088a84;
+      --teal-light:  #e0f7f6;
+      --accent:      #f59e0b;
+      --text:        #0d1526;
+      --text-2:      #3d4d6a;
+      --text-3:      #7284a3;
+      --border:      #e2e8f4;
+      --surface:     #f6f9ff;
+      --white:       #ffffff;
+      --grad-main:   linear-gradient(135deg, #0d3d8a 0%, #1a5fcb 55%, #0bb5ae 100%);
+      --grad-card:   linear-gradient(135deg, #e8f0fc 0%, #e0f7f6 100%);
+      --shadow-sm:   0 1px 4px rgba(13,61,138,.07);
+      --shadow-md:   0 4px 20px rgba(13,61,138,.10);
+      --shadow-lg:   0 12px 48px rgba(13,61,138,.15);
+      --shadow-xl:   0 24px 80px rgba(13,61,138,.18);
+      --radius-sm:   10px;
+      --radius-md:   16px;
+      --radius-lg:   24px;
+      --radius-xl:   32px;
+    }
+
+    html { scroll-behavior: smooth; font-size: 16px; }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      color: var(--text);
+      background: var(--white);
+      line-height: 1.65;
+      overflow-x: hidden;
+    }
+
+    /* ─── ANIMATIONS ─── */
+    @keyframes fadeUp   { from { opacity:0; transform:translateY(32px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes fadeIn   { from { opacity:0; } to { opacity:1; } }
+    @keyframes float    { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-10px); } }
+    @keyframes pulse    { 0%,100% { box-shadow: 0 0 0 0 rgba(11,181,174,.4); } 70% { box-shadow: 0 0 0 12px rgba(11,181,174,0); } }
+    @keyframes shimmer  { 0% { background-position:-400px 0; } 100% { background-position:400px 0; } }
+    @keyframes rotate   { from { transform:rotate(0deg); } to { transform:rotate(360deg); } }
+    @keyframes gradMove { 0%,100%{ background-position:0% 50%; } 50%{ background-position:100% 50%; } }
+
+    .animate-in { opacity: 0; transform: translateY(28px); transition: opacity .7s ease, transform .7s ease; }
+    .animate-in.visible { opacity: 1; transform: translateY(0); }
+
+    /* ─── NAV ─── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      transition: background .3s, box-shadow .3s, padding .3s;
+      padding: 1.25rem 2rem;
+    }
+    nav.scrolled {
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      box-shadow: 0 1px 24px rgba(13,61,138,.09);
+      padding: .8rem 2rem;
+    }
+    .nav-inner {
+      max-width: 1160px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 2rem;
+    }
+    .nav-logo {
+      font-size: 1.3rem;
+      font-weight: 800;
+      text-decoration: none;
+      color: var(--white);
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      transition: color .3s;
+    }
+    nav.scrolled .nav-logo { color: var(--blue-dark); }
+    .logo-icon {
+      width: 34px; height: 34px;
+      background: var(--grad-main);
+      border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .9rem;
+      flex-shrink: 0;
+    }
+    nav.scrolled .logo-icon { box-shadow: var(--shadow-sm); }
+    .nav-logo span { color: #7fe8e4; transition: color .3s; }
+    nav.scrolled .nav-logo span { color: var(--teal); }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      list-style: none;
+    }
+    .nav-links a {
+      text-decoration: none;
+      font-size: .9rem;
+      font-weight: 600;
+      color: rgba(255,255,255,.85);
+      transition: color .2s;
+    }
+    nav.scrolled .nav-links a { color: var(--text-2); }
+    .nav-links a:hover { color: var(--white); }
+    nav.scrolled .nav-links a:hover { color: var(--blue); }
+
+    .nav-cta {
+      background: var(--white) !important;
+      color: var(--blue-dark) !important;
+      padding: .55rem 1.3rem;
+      border-radius: var(--radius-sm);
+      font-weight: 700 !important;
+      font-size: .88rem !important;
+      transition: transform .15s, box-shadow .15s !important;
+      box-shadow: 0 2px 12px rgba(0,0,0,.12);
+    }
+    nav.scrolled .nav-cta { background: var(--blue) !important; color: var(--white) !important; }
+    .nav-cta:hover { transform: translateY(-1px); box-shadow: 0 4px 20px rgba(0,0,0,.18) !important; }
+
+    /* ─── HERO ─── */
+    .hero {
+      min-height: 100vh;
+      background: var(--grad-main);
+      background-size: 200% 200%;
+      animation: gradMove 8s ease infinite;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 8rem 2rem 6rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* geometric bg shapes */
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .hero-bg::before {
+      content: '';
+      position: absolute;
+      width: 700px; height: 700px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.04);
+      top: -200px; right: -200px;
+    }
+    .hero-bg::after {
+      content: '';
+      position: absolute;
+      width: 400px; height: 400px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.03);
+      bottom: -100px; left: -100px;
+    }
+    .hero-blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(60px);
+      opacity: .15;
+    }
+    .blob-1 { width:500px; height:500px; background:#7fe8e4; top:-10%; left:10%; }
+    .blob-2 { width:400px; height:400px; background:#4ab3f4; bottom:0; right:5%; }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.25);
+      color: #fff;
+      font-size: .78rem;
+      font-weight: 700;
+      letter-spacing: 1.8px;
+      text-transform: uppercase;
+      padding: .4rem 1.1rem;
+      border-radius: 100px;
+      margin-bottom: 2rem;
+      animation: fadeIn .8s ease;
+      backdrop-filter: blur(8px);
+    }
+    .badge-dot {
+      width: 6px; height: 6px;
+      background: #7fe8e4;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+      flex-shrink: 0;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.6rem, 6vw, 4.2rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -2px;
+      color: #fff;
+      margin-bottom: 1.4rem;
+      animation: fadeUp .8s .1s ease both;
+    }
+    .hero h1 em {
+      font-style: normal;
+      background: linear-gradient(90deg, #7fe8e4, #a8edea);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-sub {
+      font-size: 1.15rem;
+      color: rgba(255,255,255,.8);
+      max-width: 580px;
+      margin: 0 auto 2.5rem;
+      line-height: 1.7;
+      animation: fadeUp .8s .2s ease both;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      animation: fadeUp .8s .3s ease both;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      font-family: inherit;
+      font-weight: 700;
+      font-size: 1rem;
+      padding: .9rem 2rem;
+      border-radius: var(--radius-md);
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: transform .15s, box-shadow .15s;
+    }
+    .btn:hover { transform: translateY(-2px); }
+    .btn-white {
+      background: var(--white);
+      color: var(--blue-dark);
+      box-shadow: 0 4px 24px rgba(0,0,0,.18);
+    }
+    .btn-white:hover { box-shadow: 0 8px 36px rgba(0,0,0,.22); }
+    .btn-ghost {
+      background: rgba(255,255,255,.12);
+      color: var(--white);
+      border: 2px solid rgba(255,255,255,.3);
+      backdrop-filter: blur(8px);
+    }
+    .btn-ghost:hover { background: rgba(255,255,255,.2); }
+    .btn-blue {
+      background: var(--blue);
+      color: var(--white);
+      box-shadow: 0 4px 20px rgba(26,95,203,.35);
+    }
+    .btn-blue:hover { background: var(--blue-dark); box-shadow: 0 8px 32px rgba(26,95,203,.45); }
+
+    /* floating cards in hero */
+    .hero-cards {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      margin-top: 4rem;
+      flex-wrap: wrap;
+      animation: fadeUp .8s .4s ease both;
+    }
+    .hero-card {
+      background: rgba(255,255,255,.1);
+      border: 1px solid rgba(255,255,255,.2);
+      backdrop-filter: blur(12px);
+      border-radius: var(--radius-md);
+      padding: 1rem 1.4rem;
+      color: var(--white);
+      text-align: left;
+      min-width: 160px;
+      animation: float 4s ease-in-out infinite;
+    }
+    .hero-card:nth-child(2) { animation-delay: .5s; }
+    .hero-card:nth-child(3) { animation-delay: 1s; }
+    .hero-card .hc-icon { font-size: 1.6rem; margin-bottom: .3rem; }
+    .hero-card .hc-num { font-size: 1.6rem; font-weight: 800; letter-spacing: -1px; }
+    .hero-card .hc-label { font-size: .78rem; opacity: .75; margin-top: .1rem; }
+
+    /* ─── SCROLL INDICATOR ─── */
+    .scroll-hint {
+      position: absolute;
+      bottom: 2.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: .4rem;
+      color: rgba(255,255,255,.5);
+      font-size: .75rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      animation: fadeIn 1.5s 1s ease both;
+    }
+    .scroll-line {
+      width: 1px;
+      height: 40px;
+      background: linear-gradient(to bottom, rgba(255,255,255,.6), transparent);
+      animation: float 1.5s ease-in-out infinite;
+    }
+
+    /* ─── SHARED SECTION ─── */
+    .section { padding: 6rem 2rem; }
+    .section-inner { max-width: 1160px; margin: 0 auto; }
+    .section-label {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      font-size: .75rem;
+      font-weight: 800;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--teal);
+      margin-bottom: .8rem;
+    }
+    .section-label::before {
+      content: '';
+      display: block;
+      width: 20px;
+      height: 2px;
+      background: var(--teal);
+      border-radius: 2px;
+    }
+    h2.title {
+      font-size: clamp(1.9rem, 3.5vw, 2.8rem);
+      font-weight: 800;
+      letter-spacing: -1px;
+      line-height: 1.15;
+      margin-bottom: 1rem;
+    }
+    .title-desc {
+      font-size: 1.05rem;
+      color: var(--text-2);
+      max-width: 600px;
+      line-height: 1.75;
+    }
+
+    /* ─── ABOUT ─── */
+    #about { background: var(--surface); }
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: center;
+    }
+    .about-visual {
+      position: relative;
+    }
+    .about-visual-card {
+      background: var(--white);
+      border-radius: var(--radius-xl);
+      padding: 3rem;
+      box-shadow: var(--shadow-xl);
+      position: relative;
+      overflow: hidden;
+    }
+    .about-visual-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--grad-card);
+      opacity: .5;
+    }
+    .about-visual-inner {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    .mini-stat {
+      background: var(--white);
+      border-radius: var(--radius-md);
+      padding: 1.4rem;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border);
+    }
+    .mini-stat .ms-num {
+      font-size: 1.8rem;
+      font-weight: 800;
+      letter-spacing: -1px;
+      background: var(--grad-main);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .mini-stat .ms-label { font-size: .8rem; color: var(--text-3); margin-top: .1rem; }
+    .mini-stat.span-2 { grid-column: span 2; }
+    .floating-badge {
+      position: absolute;
+      background: var(--white);
+      border-radius: var(--radius-md);
+      padding: .8rem 1.2rem;
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+      font-size: .85rem;
+      font-weight: 600;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .fb-top { top: -1.2rem; right: -1.5rem; animation: float 3s .5s ease-in-out infinite; }
+    .fb-bottom { bottom: -1rem; left: -1.5rem; animation: float 3s 1s ease-in-out infinite; }
+    .about-text p { color: var(--text-2); font-size: .98rem; line-height: 1.8; margin-bottom: 1.2rem; }
+    .promise {
+      background: linear-gradient(135deg, var(--blue-light), var(--teal-light));
+      border-radius: var(--radius-md);
+      padding: 1.6rem 2rem;
+      border-left: 4px solid var(--teal);
+      margin-top: 1.8rem;
+    }
+    .promise p { color: var(--text); font-size: .95rem; font-style: italic; margin: 0; line-height: 1.7; }
+
+    /* ─── HOW IT WORKS ─── */
+    #como { background: var(--white); }
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 0;
+      position: relative;
+      margin-top: 3.5rem;
+    }
+    .steps::before {
+      content: '';
+      position: absolute;
+      top: 32px;
+      left: 10%;
+      right: 10%;
+      height: 2px;
+      background: linear-gradient(90deg, var(--blue-light), var(--teal-light));
+      z-index: 0;
+    }
+    .step {
+      text-align: center;
+      padding: 0 2rem;
+      position: relative;
+      z-index: 1;
+    }
+    .step-circle {
+      width: 64px; height: 64px;
+      border-radius: 50%;
+      background: var(--white);
+      border: 2px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem;
+      margin: 0 auto 1.4rem;
+      box-shadow: var(--shadow-md);
+      transition: box-shadow .3s, border-color .3s, transform .3s;
+    }
+    .step:hover .step-circle {
+      box-shadow: var(--shadow-lg);
+      border-color: var(--blue);
+      transform: scale(1.08);
+    }
+    .step-num {
+      position: absolute;
+      top: -6px; right: calc(50% - 42px);
+      width: 20px; height: 20px;
+      background: var(--blue);
+      color: #fff;
+      border-radius: 50%;
+      font-size: .65rem;
+      font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .step h3 { font-size: 1rem; font-weight: 700; margin-bottom: .5rem; }
+    .step p { font-size: .88rem; color: var(--text-3); line-height: 1.6; }
+
+    /* ─── SERVICES ─── */
+    #servicios { background: var(--surface); }
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.2rem;
+      margin-top: 3rem;
+    }
+    .service-card {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      border: 1px solid var(--border);
+      transition: transform .25s, box-shadow .25s, border-color .25s;
+      position: relative;
+      overflow: hidden;
+      cursor: default;
+    }
+    .service-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(26,95,203,.03), rgba(11,181,174,.03));
+      opacity: 0;
+      transition: opacity .3s;
+    }
+    .service-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-lg); border-color: var(--blue-light); }
+    .service-card:hover::after { opacity: 1; }
+    .sc-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 1.2rem;
+    }
+    .sc-icon {
+      width: 52px; height: 52px;
+      border-radius: var(--radius-sm);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem;
+      flex-shrink: 0;
+    }
+    .sc-num {
+      font-size: .75rem;
+      font-weight: 800;
+      color: var(--text-3);
+      background: var(--surface);
+      padding: .2rem .6rem;
+      border-radius: 100px;
+    }
+    .service-card h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: .6rem; }
+    .service-card > p { color: var(--text-2); font-size: .9rem; line-height: 1.7; }
+    .service-tip {
+      margin-top: 1.2rem;
+      padding: .8rem 1rem;
+      border-radius: var(--radius-sm);
+      font-size: .8rem;
+      color: var(--blue-dark);
+      display: flex;
+      gap: .5rem;
+      align-items: flex-start;
+      background: var(--blue-light);
+      border-left: 3px solid var(--blue);
+    }
+
+    /* icon bg colors */
+    .ic-blue    { background: var(--blue-light); }
+    .ic-teal    { background: var(--teal-light); }
+    .ic-amber   { background: #fef3c7; }
+    .ic-purple  { background: #ede9fe; }
+    .ic-rose    { background: #ffe4e6; }
+    .ic-green   { background: #d1fae5; }
+
+    /* ─── PACKAGES ─── */
+    #paquetes { background: var(--white); }
+    .plans-wrap {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-top: 3rem;
+    }
+    .plan {
+      border-radius: var(--radius-xl);
+      padding: 2.5rem;
+      border: 2px solid var(--border);
+      background: var(--white);
+      position: relative;
+      transition: box-shadow .3s;
+    }
+    .plan:hover { box-shadow: var(--shadow-lg); }
+    .plan.featured {
+      border-color: var(--blue);
+      background: linear-gradient(160deg, #f0f6ff 0%, #f0fcfb 100%);
+      box-shadow: var(--shadow-lg);
+    }
+    .plan-ribbon {
+      position: absolute;
+      top: 1.5rem; right: -14px;
+      background: var(--blue);
+      color: #fff;
+      font-size: .72rem;
+      font-weight: 800;
+      letter-spacing: .5px;
+      padding: .35rem 1.2rem .35rem 1rem;
+      border-radius: 4px 0 0 4px;
+    }
+    .plan-ribbon::after {
+      content: '';
+      position: absolute;
+      right: 0; bottom: -10px;
+      border: 5px solid transparent;
+      border-top-color: var(--blue-dark);
+      border-right-color: var(--blue-dark);
+    }
+    .plan-head { margin-bottom: 2rem; }
+    .plan-name { font-size: 1.5rem; font-weight: 800; margin-bottom: .3rem; }
+    .plan-desc { font-size: .9rem; color: var(--text-2); line-height: 1.6; }
+    .plan-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 1.8rem 0;
+    }
+    .plan-features { display: flex; flex-direction: column; gap: .9rem; }
+    .plan-feature {
+      display: flex;
+      gap: .9rem;
+      align-items: flex-start;
+      font-size: .92rem;
+    }
+    .pf-check {
+      flex-shrink: 0;
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      background: var(--teal);
+      color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .6rem;
+      margin-top: 1px;
+    }
+    .pf-x {
+      flex-shrink: 0;
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      background: var(--border);
+      margin-top: 1px;
+    }
+    .pf-label { color: var(--text); font-weight: 500; }
+    .pf-sub { display: block; font-size: .8rem; color: var(--text-3); margin-top: .1rem; font-weight: 400; }
+    .pf-inactive { color: var(--text-3); font-weight: 400; }
+
+    /* comparison table */
+    .comp-table-wrap {
+      margin-top: 2.5rem;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+    }
+    table { width: 100%; border-collapse: collapse; }
+    thead th {
+      padding: 1.1rem 1.5rem;
+      font-size: .85rem;
+      font-weight: 700;
+      text-align: left;
+      background: var(--surface);
+      color: var(--text-2);
+    }
+    thead th:not(:first-child) { text-align: center; }
+    thead th.col-pro { background: var(--blue); color: #fff; }
+    tbody tr { border-top: 1px solid var(--border); }
+    tbody tr:hover { background: var(--surface); }
+    td { padding: .9rem 1.5rem; font-size: .9rem; color: var(--text-2); }
+    td:not(:first-child) { text-align: center; }
+    td strong { color: var(--text); font-weight: 600; }
+    .ct-yes { color: var(--teal); font-size: 1.1rem; }
+    .ct-no { color: var(--border); font-size: 1.1rem; }
+
+    /* ─── BRANDED CONTENT ─── */
+    #contenido { background: var(--surface); }
+    .bc-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: start;
+      margin-top: 3rem;
+    }
+    .bc-features { display: flex; flex-direction: column; gap: 1.4rem; }
+    .bc-feature {
+      display: flex;
+      gap: 1.2rem;
+      align-items: flex-start;
+    }
+    .bc-icon {
+      flex-shrink: 0;
+      width: 48px; height: 48px;
+      border-radius: var(--radius-md);
+      background: var(--blue-light);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem;
+    }
+    .bc-feature h4 { font-size: .98rem; font-weight: 700; margin-bottom: .3rem; }
+    .bc-feature p { font-size: .88rem; color: var(--text-2); line-height: 1.65; }
+    .bc-topics {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 2rem;
+      box-shadow: var(--shadow-md);
+    }
+    .bc-topics-title {
+      font-size: .75rem;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-3);
+      margin-bottom: 1.2rem;
+    }
+    .topic-tag {
+      display: inline-block;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      padding: .4rem 1rem;
+      font-size: .82rem;
+      color: var(--text-2);
+      margin: .3rem .25rem;
+      font-weight: 500;
+      transition: background .2s, color .2s, border-color .2s;
+      cursor: default;
+    }
+    .topic-tag:hover { background: var(--blue-light); color: var(--blue-dark); border-color: var(--blue-light); }
+    .bc-note {
+      margin-top: 1.5rem;
+      padding: 1.2rem 1.5rem;
+      background: linear-gradient(135deg, var(--blue-light), var(--teal-light));
+      border-radius: var(--radius-md);
+      font-size: .88rem;
+      color: var(--text-2);
+      line-height: 1.65;
+    }
+    .bc-note strong { color: var(--blue-dark); }
+
+    /* ─── WHY DOCTOR DIGITAL ─── */
+    #por-que { background: var(--white); }
+    .why-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.2rem;
+      margin-top: 3rem;
+    }
+    .why-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      transition: transform .25s, box-shadow .25s;
+    }
+    .why-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+    .why-card .wc-icon {
+      width: 52px; height: 52px;
+      border-radius: var(--radius-sm);
+      background: var(--grad-main);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem;
+      margin-bottom: 1.2rem;
+    }
+    .why-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: .5rem; }
+    .why-card p { font-size: .88rem; color: var(--text-2); line-height: 1.65; }
+
+    /* ─── CTA ─── */
+    #contacto {
+      background: var(--grad-main);
+      background-size: 200% 200%;
+      animation: gradMove 8s ease infinite;
+      padding: 7rem 2rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    #contacto::before {
+      content: '';
+      position: absolute;
+      width: 600px; height: 600px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.04);
+      top: -200px; right: -200px;
+      pointer-events: none;
+    }
+    #contacto::after {
+      content: '';
+      position: absolute;
+      width: 400px; height: 400px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.03);
+      bottom: -150px; left: -100px;
+      pointer-events: none;
+    }
+    .cta-inner { position: relative; z-index: 1; }
+    #contacto h2 { font-size: clamp(2rem, 4vw, 3rem); color: #fff; letter-spacing: -1px; margin-bottom: 1rem; }
+    #contacto p { font-size: 1.05rem; color: rgba(255,255,255,.8); max-width: 500px; margin: 0 auto 2.5rem; line-height: 1.7; }
+    .cta-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+    .cta-trust {
+      margin-top: 2.5rem;
+      font-size: .82rem;
+      color: rgba(255,255,255,.55);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .ct-item { display: flex; align-items: center; gap: .4rem; }
+
+    /* ─── FOOTER ─── */
+    footer {
+      background: var(--text);
+      color: rgba(255,255,255,.45);
+      text-align: center;
+      padding: 2.5rem 2rem;
+      font-size: .83rem;
+    }
+    footer .footer-logo {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: rgba(255,255,255,.85);
+      margin-bottom: .5rem;
+      display: block;
+    }
+    footer .footer-logo span { color: #7fe8e4; }
+    footer a { color: rgba(255,255,255,.45); text-decoration: none; }
+    footer a:hover { color: rgba(255,255,255,.8); }
+
+    /* ─── TESTIMONIALS ─── */
+    #testimonios { background: var(--surface); }
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.4rem;
+      margin-top: 3rem;
+    }
+    .testi-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.4rem;
+      transition: transform .25s, box-shadow .25s;
+      position: relative;
+    }
+    .testi-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-lg); }
+    .testi-stars { color: #f59e0b; font-size: 1rem; letter-spacing: 2px; }
+    .testi-quote {
+      font-size: .95rem;
+      color: var(--text-2);
+      line-height: 1.75;
+      flex: 1;
+      font-style: italic;
+    }
+    .testi-quote::before { content: '\201C'; font-size: 2.5rem; color: var(--blue-light); line-height: 0; vertical-align: -0.6rem; margin-right: .2rem; font-style: normal; font-weight: 800; }
+    .testi-author { display: flex; align-items: center; gap: .9rem; }
+    .testi-avatar {
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--white);
+      flex-shrink: 0;
+    }
+    .av-blue  { background: linear-gradient(135deg, var(--blue-dark), var(--blue)); }
+    .av-teal  { background: linear-gradient(135deg, var(--teal-dark), var(--teal)); }
+    .av-purple{ background: linear-gradient(135deg, #6d28d9, #8b5cf6); }
+    .testi-info { display: flex; flex-direction: column; }
+    .testi-name { font-size: .93rem; font-weight: 700; color: var(--text); }
+    .testi-role { font-size: .8rem; color: var(--text-3); }
+    .testi-tag {
+      position: absolute;
+      top: 1.5rem; right: 1.5rem;
+      background: var(--teal-light);
+      color: var(--teal-dark);
+      font-size: .7rem;
+      font-weight: 700;
+      padding: .2rem .7rem;
+      border-radius: 100px;
+    }
+
+    /* ─── FAQ ─── */
+    #faq { background: var(--white); }
+    .faq-wrap {
+      max-width: 760px;
+      margin: 3rem auto 0;
+      display: flex;
+      flex-direction: column;
+      gap: .8rem;
+    }
+    .faq-item {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      transition: box-shadow .2s;
+    }
+    .faq-item.open { box-shadow: var(--shadow-md); border-color: var(--blue-light); }
+    .faq-q {
+      width: 100%;
+      background: var(--white);
+      border: none;
+      padding: 1.3rem 1.5rem;
+      text-align: left;
+      font-family: inherit;
+      font-size: .97rem;
+      font-weight: 700;
+      color: var(--text);
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      transition: background .2s;
+    }
+    .faq-item.open .faq-q { background: var(--blue-light); color: var(--blue-dark); }
+    .faq-icon {
+      flex-shrink: 0;
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background: var(--surface);
+      display: flex; align-items: center; justify-content: center;
+      font-size: .85rem;
+      font-weight: 800;
+      transition: transform .3s, background .2s;
+      color: var(--blue);
+    }
+    .faq-item.open .faq-icon { transform: rotate(45deg); background: var(--blue); color: #fff; }
+    .faq-a {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height .35s ease, padding .35s ease;
+      padding: 0 1.5rem;
+      font-size: .92rem;
+      color: var(--text-2);
+      line-height: 1.75;
+    }
+    .faq-item.open .faq-a { max-height: 300px; padding: 1rem 1.5rem 1.4rem; }
+
+    /* ─── CONTACT FORM ─── */
+    #contacto {
+      background: var(--grad-main);
+      background-size: 200% 200%;
+      animation: gradMove 8s ease infinite;
+      padding: 6rem 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+    #contacto::before {
+      content: '';
+      position: absolute;
+      width: 600px; height: 600px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.04);
+      top: -200px; right: -200px;
+      pointer-events: none;
+    }
+    #contacto::after {
+      content: '';
+      position: absolute;
+      width: 400px; height: 400px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.03);
+      bottom: -150px; left: -100px;
+      pointer-events: none;
+    }
+    .contact-grid {
+      position: relative;
+      z-index: 1;
+      max-width: 1060px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: center;
+    }
+    .contact-left h2 { font-size: clamp(2rem, 4vw, 2.8rem); color: #fff; letter-spacing: -1px; margin-bottom: 1rem; line-height: 1.15; }
+    .contact-left p { font-size: 1rem; color: rgba(255,255,255,.78); line-height: 1.75; margin-bottom: 2rem; }
+    .contact-trust { display: flex; flex-direction: column; gap: .7rem; }
+    .ct2-item { display: flex; align-items: center; gap: .7rem; font-size: .9rem; color: rgba(255,255,255,.7); }
+    .ct2-item span:first-child {
+      width: 24px; height: 24px;
+      background: rgba(255,255,255,.15);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .7rem;
+      flex-shrink: 0;
+    }
+    .contact-form-card {
+      background: var(--white);
+      border-radius: var(--radius-xl);
+      padding: 2.5rem;
+      box-shadow: var(--shadow-xl);
+    }
+    .form-title { font-size: 1.15rem; font-weight: 800; color: var(--text); margin-bottom: .3rem; }
+    .form-sub { font-size: .85rem; color: var(--text-3); margin-bottom: 1.8rem; }
+    .form-group { margin-bottom: 1.1rem; }
+    .form-group label {
+      display: block;
+      font-size: .82rem;
+      font-weight: 700;
+      color: var(--text-2);
+      margin-bottom: .4rem;
+    }
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: .8rem 1rem;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-family: inherit;
+      font-size: .92rem;
+      color: var(--text);
+      background: var(--surface);
+      transition: border-color .2s, box-shadow .2s;
+      outline: none;
+    }
+    .form-group input:focus,
+    .form-group select:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(26,95,203,.12);
+      background: var(--white);
+    }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: .8rem; }
+    .btn-submit {
+      width: 100%;
+      padding: 1rem;
+      background: var(--blue);
+      color: var(--white);
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 700;
+      border: none;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: background .2s, transform .15s, box-shadow .2s;
+      margin-top: .5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: .5rem;
+    }
+    .btn-submit:hover { background: var(--blue-dark); transform: translateY(-2px); box-shadow: 0 8px 28px rgba(26,95,203,.4); }
+    .form-success {
+      display: none;
+      text-align: center;
+      padding: 2rem 1rem;
+    }
+    .form-success .fs-icon { font-size: 3rem; margin-bottom: 1rem; }
+    .form-success h3 { font-size: 1.2rem; font-weight: 800; color: var(--text); margin-bottom: .5rem; }
+    .form-success p { font-size: .9rem; color: var(--text-2); }
+
+    /* ─── WHATSAPP FLOAT ─── */
+    .wa-float {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      z-index: 999;
+      display: flex;
+      align-items: center;
+      gap: .7rem;
+      background: #25D366;
+      color: #fff;
+      font-weight: 700;
+      font-size: .88rem;
+      padding: .8rem 1.2rem .8rem 1rem;
+      border-radius: 100px;
+      text-decoration: none;
+      box-shadow: 0 4px 24px rgba(37,211,102,.45);
+      transition: transform .2s, box-shadow .2s, padding .3s;
+      overflow: hidden;
+    }
+    .wa-float:hover { transform: translateY(-3px) scale(1.03); box-shadow: 0 8px 36px rgba(37,211,102,.55); }
+    .wa-icon { font-size: 1.3rem; flex-shrink: 0; }
+    .wa-label { white-space: nowrap; }
+    @keyframes waPulse { 0%,100%{ box-shadow: 0 4px 24px rgba(37,211,102,.45); } 50%{ box-shadow: 0 4px 36px rgba(37,211,102,.7); } }
+    .wa-float { animation: waPulse 3s ease-in-out infinite; }
+
+    /* ─── HAMBURGER MENU ─── */
+    .hamburger {
+      display: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: .4rem;
+      flex-direction: column;
+      gap: 5px;
+      z-index: 1100;
+    }
+    .hamburger span {
+      display: block;
+      width: 24px;
+      height: 2.5px;
+      border-radius: 2px;
+      background: var(--white);
+      transition: transform .3s, opacity .3s, background .3s;
+    }
+    nav.scrolled .hamburger span { background: var(--text); }
+    .hamburger.open span:nth-child(1) { transform: translateY(7.5px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7.5px) rotate(-45deg); }
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 1050;
+      background: var(--white);
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2rem;
+      padding: 2rem;
+    }
+    .mobile-menu.open { display: flex; animation: fadeIn .25s ease; }
+    .mobile-menu a {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--text);
+      text-decoration: none;
+      transition: color .2s;
+    }
+    .mobile-menu a:hover { color: var(--blue); }
+    .mobile-menu .mm-cta {
+      background: var(--blue);
+      color: var(--white) !important;
+      padding: .9rem 2.5rem;
+      border-radius: var(--radius-md);
+      font-size: 1.1rem !important;
+      margin-top: .5rem;
+    }
+    .mobile-menu .mm-close {
+      position: absolute;
+      top: 1.5rem;
+      right: 1.5rem;
+      font-size: 1.8rem;
+      color: var(--text-3);
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-weight: 300;
+      line-height: 1;
+    }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 960px) {
+      .services-grid { grid-template-columns: 1fr 1fr; }
+      .about-grid { grid-template-columns: 1fr; }
+      .about-visual { display: none; }
+      .bc-grid { grid-template-columns: 1fr; gap: 2rem; }
+      .why-grid { grid-template-columns: 1fr 1fr; }
+      .testimonials-grid { grid-template-columns: 1fr 1fr; }
+      .contact-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+    }
+    @media (max-width: 720px) {
+      .services-grid, .plans-wrap, .why-grid { grid-template-columns: 1fr; }
+      .testimonials-grid { grid-template-columns: 1fr; }
+      .steps::before { display: none; }
+      .nav-links { display: none; }
+      .hamburger { display: flex; }
+      .hero-cards { display: none; }
+      .scroll-hint { display: none; }
+      .form-row { grid-template-columns: 1fr; }
+      .wa-label { display: none; }
+      .wa-float { padding: .9rem; border-radius: 50%; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══ NAV ═══ -->
+<nav id="nav">
+  <div class="nav-inner">
+    <a href="#" class="nav-logo">
+      <div class="logo-icon">🩺</div>
+      Doctor<span>Digital</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#about">Nosotros</a></li>
+      <li><a href="#servicios">Servicios</a></li>
+      <li><a href="#paquetes">Paquetes</a></li>
+      <li><a href="#contenido">Contenido</a></li>
+      <li><a href="#contacto" class="nav-cta">Comenzar ahora</a></li>
+    </ul>
+    <button class="hamburger" id="hamburger" aria-label="Menú">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- ═══ MENÚ MÓVIL ═══ -->
+<div class="mobile-menu" id="mobileMenu">
+  <button class="mm-close" id="menuClose" aria-label="Cerrar">✕</button>
+  <a href="#about"      onclick="closeMobileMenu()">Nosotros</a>
+  <a href="#servicios"  onclick="closeMobileMenu()">Servicios</a>
+  <a href="#paquetes"   onclick="closeMobileMenu()">Paquetes</a>
+  <a href="#contenido"  onclick="closeMobileMenu()">Contenido</a>
+  <a href="#testimonios" onclick="closeMobileMenu()">Testimonios</a>
+  <a href="#faq"        onclick="closeMobileMenu()">Preguntas</a>
+  <a href="#contacto"   onclick="closeMobileMenu()" class="mm-cta">Comenzar ahora →</a>
+</div>
+
+<!-- ═══ HERO ═══ -->
+<section class="hero">
+  <div class="hero-bg">
+    <div class="hero-blob blob-1"></div>
+    <div class="hero-blob blob-2"></div>
+  </div>
+
+  <div class="hero-badge">
+    <span class="badge-dot"></span>
+    Presencia Digital para Médicos en México
+  </div>
+
+  <h1>Tu consultorio,<br><em>visible para todos.</em></h1>
+
+  <p class="hero-sub">
+    Ayudamos a médicos, especialistas, odontólogos y clínicas a construir una identidad digital profesional para conectar con más pacientes y hacer crecer su práctica médica.
+  </p>
+
+  <div class="hero-actions">
+    <a href="#paquetes" class="btn btn-white">Ver paquetes →</a>
+    <a href="#servicios" class="btn btn-ghost">Conocer servicios</a>
+  </div>
+
+  <div class="hero-cards">
+    <div class="hero-card">
+      <div class="hc-icon">🗺️</div>
+      <div class="hc-num">88%</div>
+      <div class="hc-label">de búsquedas locales resultan en visita</div>
+    </div>
+    <div class="hero-card">
+      <div class="hc-icon">📅</div>
+      <div class="hc-num">40%</div>
+      <div class="hc-label">menos ausencias con recordatorios</div>
+    </div>
+    <div class="hero-card">
+      <div class="hc-icon">📱</div>
+      <div class="hc-num">3×</div>
+      <div class="hc-label">más referencias con redes activas</div>
+    </div>
+  </div>
+
+  <div class="scroll-hint">
+    <div class="scroll-line"></div>
+    Scroll
+  </div>
+</section>
+
+<!-- ═══ ABOUT ═══ -->
+<section class="section" id="about">
+  <div class="section-inner">
+    <div class="about-grid">
+      <div class="about-text animate-in">
+        <div class="section-label">¿Qué es Doctor Digital?</div>
+        <h2 class="title">La agencia digital<br>creada para médicos</h2>
+        <p>Doctor Digital es una agencia especializada en presencia digital para médicos y profesionales de la salud en México. Ayudamos a construir una identidad profesional en línea que les permita conectar con más pacientes, generar confianza y crecer su práctica médica.</p>
+        <p>Entendemos que el médico de hoy necesita algo más que un consultorio bien equipado: <strong>necesita ser encontrado</strong>. Nos encargamos de todo lo digital — desde el dominio y correo profesional, hasta el posicionamiento en Google Maps y la gestión de redes sociales.</p>
+        <div class="promise">
+          <p>"No vendemos tecnología complicada. Ofrecemos tranquilidad: <strong>tú recibes pacientes nuevos</strong>, nosotros nos encargamos de que te encuentren. Simple, profesional y diseñado especialmente para el sector salud en México."</p>
+        </div>
+      </div>
+      <div class="about-visual animate-in">
+        <div class="about-visual-card">
+          <div class="about-visual-inner">
+            <div class="mini-stat">
+              <div class="ms-num">88%</div>
+              <div class="ms-label">Búsquedas locales que resultan en visita o llamada</div>
+            </div>
+            <div class="mini-stat">
+              <div class="ms-num">75%</div>
+              <div class="ms-label">Más confianza con correo de dominio propio</div>
+            </div>
+            <div class="mini-stat">
+              <div class="ms-num">40%</div>
+              <div class="ms-label">Menos ausencias con recordatorios automáticos</div>
+            </div>
+            <div class="mini-stat">
+              <div class="ms-num">3×</div>
+              <div class="ms-label">Más referencias con redes sociales activas</div>
+            </div>
+            <div class="mini-stat span-2">
+              <div class="ms-num">24/7</div>
+              <div class="ms-label">Tu consultorio disponible para recibir citas a cualquier hora, cualquier día</div>
+            </div>
+          </div>
+        </div>
+        <div class="floating-badge fb-top">
+          <span>✅</span> Perfil de Google verificado
+        </div>
+        <div class="floating-badge fb-bottom">
+          <span>📲</span> Recordatorio automático enviado
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ CÓMO FUNCIONA ═══ -->
+<section class="section" id="como">
+  <div class="section-inner">
+    <div class="section-label">¿Cómo funciona?</div>
+    <h2 class="title">Listo en días, no en semanas</h2>
+    <p class="title-desc">Nuestro proceso es simple y rápido. Tú solo nos das la información de tu consultorio — nosotros hacemos el resto.</p>
+    <div class="steps">
+      <div class="step animate-in">
+        <div class="step-circle">📋<div class="step-num">1</div></div>
+        <h3>Nos compartes tu info</h3>
+        <p>Nombre, especialidad, ubicación, horarios y foto. En 10 minutos tenemos todo lo que necesitamos.</p>
+      </div>
+      <div class="step animate-in">
+        <div class="step-circle">⚙️<div class="step-num">2</div></div>
+        <h3>Configuramos todo</h3>
+        <p>Dominio, correo, Google Maps, directorio médico, sistema de citas y notificaciones automáticas.</p>
+      </div>
+      <div class="step animate-in">
+        <div class="step-circle">✅<div class="step-num">3</div></div>
+        <h3>Revisas y apruebas</h3>
+        <p>Te mostramos todo antes de publicar. Si algo no te gusta, lo ajustamos sin costo.</p>
+      </div>
+      <div class="step animate-in">
+        <div class="step-circle">🚀<div class="step-num">4</div></div>
+        <h3>¡Listos para crecer!</h3>
+        <p>Tu consultorio ya es visible en Google. Los pacientes pueden encontrarte y agendar cita en cualquier momento.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SERVICES ═══ -->
+<section class="section" id="servicios">
+  <div class="section-inner">
+    <div class="section-label">Servicios</div>
+    <h2 class="title">Todo lo que tu consultorio<br>necesita, en un solo lugar</h2>
+    <p class="title-desc">Cada servicio tiene un propósito claro dentro de tu estrategia digital. Aquí te explicamos qué hace cada uno y por qué es indispensable.</p>
+
+    <div class="services-grid">
+
+      <div class="service-card animate-in">
+        <div class="sc-top">
+          <div class="sc-icon ic-blue">🌐</div>
+          <span class="sc-num">01</span>
+        </div>
+        <h3>Dominio Web Profesional</h3>
+        <p>Tu dirección en internet. Un sitio como <strong>www.dra-garcia.com</strong> transmite profesionalismo, genera confianza y es el punto de llegada de todos tus esfuerzos digitales.</p>
+        <div class="service-tip">
+          <span>💡</span>
+          <span>Sin dominio propio, cualquier paciente que te busque en Google puede terminar encontrando a tu competencia.</span>
+        </div>
+      </div>
+
+      <div class="service-card animate-in">
+        <div class="sc-top">
+          <div class="sc-icon ic-teal">📧</div>
+          <span class="sc-num">02</span>
+        </div>
+        <h3>Correo Personalizado</h3>
+        <p>Un correo como <strong>dr.martinez@consultoriomartinez.com</strong> proyecta imagen profesional en cada mensaje. Usar Gmail o Hotmail con pacientes y laboratorios resta credibilidad.</p>
+        <div class="service-tip">
+          <span>💡</span>
+          <span>El 75% de las personas confía más en un negocio que usa correo con dominio propio.</span>
+        </div>
+      </div>
+
+      <div class="service-card animate-in">
+        <div class="sc-top">
+          <div class="sc-icon ic-amber">📍</div>
+          <span class="sc-num">03</span>
+        </div>
+        <h3>Directorio Médico Local</h3>
+        <p>Cuando alguien busca <em>"cardiólogo en León"</em> o <em>"pediatra cerca de mí"</em>, los directorios médicos son de los primeros resultados. Estar ahí multiplica tus probabilidades de ser encontrado.</p>
+        <div class="service-tip">
+          <span>💡</span>
+          <span>Los pacientes investigan antes de elegir médico. Si no apareces, simplemente no existes para ellos.</span>
+        </div>
+      </div>
+
+      <div class="service-card animate-in">
+        <div class="sc-top">
+          <div class="sc-icon ic-green">🗺️</div>
+          <span class="sc-num">04</span>
+        </div>
+        <h3>Posicionamiento en Google Maps</h3>
+        <p>Google Maps es el directorio más consultado del mundo. Un perfil optimizado con fotos, horarios, especialidad y reseñas hace que tu consultorio aparezca antes que el de la competencia.</p>
+        <div class="service-tip">
+          <span>💡</span>
+          <span>El 88% de las búsquedas locales en celular resultan en visita o llamada en las siguientes 24 horas.</span>
+        </div>
+      </div>
+
+      <div class="service-card animate-in">
+        <div class="sc-top">
+          <div class="sc-icon ic-purple">📅</div>
+          <span class="sc-num">05</span>
+        </div>
+        <h3>Sistema de Citas Online 24/7</h3>
+        <p>Pacientes agendan desde tu sitio a cualquier hora, conectado con <strong>Google Calendar y Apple Calendar</strong>. Reciben confirmación y recordatorio por <strong>WhatsApp y correo</strong>, reduciendo ausencias.</p>
+        <div class="service-tip">
+          <span>💡</span>
+          <span>Un sistema de citas online puede reducir hasta un 40% las ausencias gracias a los recordatorios automáticos.</span>
+        </div>
+      </div>
+
+      <div class="service-card animate-in">
+        <div class="sc-top">
+          <div class="sc-icon ic-rose">📱</div>
+          <span class="sc-num">06</span>
+        </div>
+        <h3>Administración de Redes Sociales</h3>
+        <p>Las redes son donde los pacientes conocen, siguen y recomiendan a su médico. Un perfil activo con contenido de valor construye autoridad, fideliza pacientes y atrae nuevos de forma orgánica.</p>
+        <div class="service-tip">
+          <span>💡</span>
+          <span>Un médico con redes activas genera hasta 3× más referencias de boca en boca que uno sin presencia.</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══ PACKAGES ═══ -->
+<section class="section" id="paquetes">
+  <div class="section-inner">
+    <div class="section-label">Paquetes</div>
+    <h2 class="title">Elige el plan que mejor<br>se adapta a ti</h2>
+    <p class="title-desc">Dos planes diseñados para diferentes momentos de tu práctica médica. Sin contratos. Cancela cuando quieras.</p>
+
+    <div class="plans-wrap">
+
+      <!-- BASE -->
+      <div class="plan animate-in">
+        <div class="plan-head">
+          <div class="plan-name">Paquete Base</div>
+          <div class="plan-desc">Presencia profesional completa desde el primer día. Perfecto para médicos que quieren ser encontrados.</div>
+        </div>
+        <div class="plan-divider"></div>
+        <div class="plan-features">
+          <div class="plan-feature">
+            <div class="pf-check">✓</div>
+            <div>
+              <span class="pf-label">Dominio web profesional</span>
+              <span class="pf-sub">Sitio con tu nombre: www.tunombre.com</span>
+            </div>
+          </div>
+          <div class="plan-feature">
+            <div class="pf-check">✓</div>
+            <div>
+              <span class="pf-label">Correo personalizado</span>
+              <span class="pf-sub">doctor@tunombre.com — imagen profesional en cada mensaje</span>
+            </div>
+          </div>
+          <div class="plan-feature">
+            <div class="pf-check">✓</div>
+            <div>
+              <span class="pf-label">Directorio médico local</span>
+              <span class="pf-sub">Alta y optimización en los principales directorios de salud en México</span>
+            </div>
+          </div>
+          <div class="plan-feature">
+            <div class="pf-check">✓</div>
+            <div>
+              <span class="pf-label">Posicionamiento en Google Maps</span>
+              <span class="pf-sub">Perfil verificado con fotos, horarios y especialidad</span>
+            </div>
+          </div>
+          <div class="plan-feature">
+            <div class="pf-check">✓</div>
+            <div>
+              <span class="pf-label">Sistema de citas online 24/7</span>
+              <span class="pf-sub">Integrado con Google Calendar y Apple Calendar</span>
+            </div>
+          </div>
+          <div class="plan-feature">
+            <div class="pf-check">✓</div>
+            <div>
+              <span class="pf-label">Notificaciones automáticas</span>
+              <span class="pf-sub">WhatsApp + correo al confirmar + recordatorio 24 hrs antes</span>
+            </div>
+          </div>
+          <div class="plan-feature">
+            <div class="pf-x"></div>
+            <div><span class="pf-inactive">Gestión de redes sociales</span></div>
+          </div>
+          <div class="plan-feature">
+            <div class="pf-x"></div>
+            <div><span class="pf-inactive">Diseño de contenido</span></div>
+          </div>
+          <div class="plan-feature">
+            <div class="pf-x"></div>
+            <div><span class="pf-inactive">Reporte mensual de resultados</span></div>
+          </div>
+        </div>
+        <div class="plan-divider"></div>
+        <a href="#contacto" class="btn btn-blue" style="width:100%; justify-content:center; font-size:.95rem;">Quiero el Paquete Base →</a>
+      </div>
+
+      <!-- PRO -->
+      <div class="plan featured animate-in">
+        <div class="plan-ribbon">⭐ Recomendado</div>
+        <div class="plan-head">
+          <div class="plan-name">Paquete Pro</div>
+          <div class="plan-desc">Para médicos que quieren ir un paso más allá: ser encontrados <em>y</em> ser recordados por sus pacientes.</div>
+        </div>
+        <div class="plan-divider"></div>
+        <div class="plan-features">
+          <div class="plan-feature">
+            <div class="pf-check">✓</div>
+            <div>
+              <span class="pf-label">Todo lo del Paquete Base</span>
+              <span class="pf-sub">Los 6 servicios del plan anterior incluidos</span>
+            </div>
+          </div>
+          <div class="plan-feature">
+            <div class="pf-check">✓</div>
+            <div>
+              <span class="pf-label">4 publicaciones al mes en redes</span>
+              <span class="pf-sub">Una por semana en Instagram y Facebook</span>
+            </div>
+          </div>
+          <div class="plan-feature">
+            <div class="pf-check">✓</div>
+            <div>
+              <span class="pf-label">Diseño de contenido incluido</span>
+              <span class="pf-sub">Gráficos, tips de salud y promoción del consultorio</span>
+            </div>
+          </div>
+          <div class="plan-feature">
+            <div class="pf-check">✓</div>
+            <div>
+              <span class="pf-label">Reporte mensual de resultados</span>
+              <span class="pf-sub">Alcance, seguidores nuevos y rendimiento de publicaciones</span>
+            </div>
+          </div>
+        </div>
+        <div class="plan-divider"></div>
+        <a href="#contacto" class="btn btn-blue" style="width:100%; justify-content:center; font-size:.95rem;">Quiero el Paquete Pro →</a>
+      </div>
+    </div>
+
+    <!-- TABLA COMPARATIVA -->
+    <div class="comp-table-wrap animate-in">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:50%">Servicio incluido</th>
+            <th style="width:25%">Base</th>
+            <th class="col-pro" style="width:25%">Pro ⭐</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>Dominio web profesional</strong></td><td><span class="ct-yes">✔</span></td><td><span class="ct-yes">✔</span></td></tr>
+          <tr><td><strong>Correo personalizado</strong></td><td><span class="ct-yes">✔</span></td><td><span class="ct-yes">✔</span></td></tr>
+          <tr><td><strong>Directorio médico local</strong></td><td><span class="ct-yes">✔</span></td><td><span class="ct-yes">✔</span></td></tr>
+          <tr><td><strong>Posicionamiento Google Maps</strong></td><td><span class="ct-yes">✔</span></td><td><span class="ct-yes">✔</span></td></tr>
+          <tr><td><strong>Sistema de citas online 24/7</strong></td><td><span class="ct-yes">✔</span></td><td><span class="ct-yes">✔</span></td></tr>
+          <tr><td><strong>Notificaciones WhatsApp + Correo</strong></td><td><span class="ct-yes">✔</span></td><td><span class="ct-yes">✔</span></td></tr>
+          <tr><td><strong>Google Calendar + Apple Calendar</strong></td><td><span class="ct-yes">✔</span></td><td><span class="ct-yes">✔</span></td></tr>
+          <tr><td><strong>Redes sociales (4 posts/mes)</strong></td><td><span class="ct-no">—</span></td><td><span class="ct-yes">✔</span></td></tr>
+          <tr><td><strong>Diseño de contenido</strong></td><td><span class="ct-no">—</span></td><td><span class="ct-yes">✔</span></td></tr>
+          <tr><td><strong>Reporte mensual de resultados</strong></td><td><span class="ct-no">—</span></td><td><span class="ct-yes">✔</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ BRANDED CONTENT ═══ -->
+<section class="section" id="contenido">
+  <div class="section-inner">
+    <div class="section-label">Servicio Adicional</div>
+    <h2 class="title">Branded Content Médico</h2>
+    <p class="title-desc">Compatible con cualquier paquete. Posiciona al médico como autoridad de confianza y atrae pacientes desde Google de forma orgánica y permanente.</p>
+
+    <div class="bc-grid">
+      <div class="bc-features animate-in">
+        <div class="bc-feature">
+          <div class="bc-icon">✍️</div>
+          <div>
+            <h4>Artículo editorial tipo blog</h4>
+            <p>800 a 1,200 palabras, redactado con la voz e información del propio doctor para sonar auténtico y profesional.</p>
+          </div>
+        </div>
+        <div class="bc-feature">
+          <div class="bc-icon" style="background: var(--teal-light);">🎯</div>
+          <div>
+            <h4>Temáticas personalizadas</h4>
+            <p>Especialidad, enfermedades frecuentes, prevención, mitos, avances médicos — siempre relevante para tus pacientes.</p>
+          </div>
+        </div>
+        <div class="bc-feature">
+          <div class="bc-icon" style="background: #fef3c7;">🔍</div>
+          <div>
+            <h4>Optimizado para Google (SEO)</h4>
+            <p>Palabras clave seleccionadas para aparecer en las búsquedas reales de pacientes que necesitan tu especialidad.</p>
+          </div>
+        </div>
+        <div class="bc-feature">
+          <div class="bc-icon" style="background: #ede9fe;">🌐</div>
+          <div>
+            <h4>Publicado en tu sitio web</h4>
+            <p>Queda en tu dominio para siempre, construyendo autoridad con el tiempo y generando visitas orgánicas mes a mes.</p>
+          </div>
+        </div>
+        <div class="bc-feature">
+          <div class="bc-icon" style="background: #ffe4e6;">🖼️</div>
+          <div>
+            <h4>Imagen de portada incluida</h4>
+            <p>Diseño visual profesional alineado a la identidad gráfica del consultorio.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="animate-in">
+        <div class="bc-topics">
+          <div class="bc-topics-title">Ejemplos de temas para tus artículos</div>
+          <span class="topic-tag">¿Cuándo ir al cardiólogo? Señales que no debes ignorar</span>
+          <span class="topic-tag">Diabetes tipo 2: señales de alerta tempranas</span>
+          <span class="topic-tag">5 mitos sobre la hipertensión</span>
+          <span class="topic-tag">Revisión dental: ¿cada cuánto debes ir?</span>
+          <span class="topic-tag">Cómo cuidar tu columna en el escritorio</span>
+          <span class="topic-tag">Vacunas en adultos mayores: guía completa 2025</span>
+          <span class="topic-tag">Presión arterial alta: cómo detectarla</span>
+          <span class="topic-tag">Colesterol: mitos y realidades</span>
+          <span class="topic-tag">Síntomas del reflujo y cómo tratarlo</span>
+
+          <div class="bc-note">
+            <strong>¿Por qué funciona?</strong> Cada artículo permanece en tu sitio para siempre, generando visitas orgánicas de pacientes nuevos mes tras mes — sin costo adicional de difusión ni anuncios pagados.
+          </div>
+        </div>
+        <a href="#contacto" class="btn btn-blue" style="margin-top: 1.2rem; width:100%; justify-content:center;">Agregar a mi plan →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ WHY US ═══ -->
+<section class="section" id="por-que">
+  <div class="section-inner">
+    <div class="section-label">¿Por qué Doctor Digital?</div>
+    <h2 class="title">Diseñado exclusivamente<br>para el sector salud</h2>
+    <p class="title-desc">No somos una agencia genérica. Entendemos las necesidades y el lenguaje del mundo médico.</p>
+
+    <div class="why-grid">
+      <div class="why-card animate-in">
+        <div class="wc-icon">🎯</div>
+        <h3>Especialización en salud</h3>
+        <p>Conocemos el sector médico: el lenguaje, las necesidades de los pacientes y los canales donde te buscan. No es lo mismo vender zapatos que atraer pacientes.</p>
+      </div>
+      <div class="why-card animate-in">
+        <div class="wc-icon">⚡</div>
+        <h3>Rápido y sin complicaciones</h3>
+        <p>Tu consultorio digital queda listo en 3 a 5 días hábiles. Tú nos das la información, nosotros nos encargamos de todo — sin que tengas que aprender tecnología.</p>
+      </div>
+      <div class="why-card animate-in">
+        <div class="wc-icon">🔄</div>
+        <h3>Sin contratos atantes</h3>
+        <p>Mes a mes. Cancela cuando quieras, sin penalidades. Nos quedamos porque nuestro trabajo habla por sí solo, no porque hayas firmado un contrato.</p>
+      </div>
+      <div class="why-card animate-in">
+        <div class="wc-icon">📊</div>
+        <h3>Resultados medibles</h3>
+        <p>Con el Paquete Pro recibes un reporte mensual con métricas reales: alcance, seguidores nuevos y rendimiento de cada publicación.</p>
+      </div>
+      <div class="why-card animate-in">
+        <div class="wc-icon">🤝</div>
+        <h3>Atención personalizada</h3>
+        <p>No eres un número de ticket. Tienes acceso directo a tu responsable de cuenta para cualquier duda, ajuste o mejora que necesites.</p>
+      </div>
+      <div class="why-card animate-in">
+        <div class="wc-icon">🛡️</div>
+        <h3>Todo bajo tu control</h3>
+        <p>Tu dominio, tu correo, tu perfil de Google — todo queda registrado a tu nombre. Si algún día decides salirte, te llevas todo. Sin sorpresas.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ TESTIMONIOS ═══ -->
+<section class="section" id="testimonios">
+  <div class="section-inner">
+    <div class="section-label">Testimonios</div>
+    <h2 class="title">Lo que dicen los médicos<br>que ya trabajan con nosotros</h2>
+    <p class="title-desc">Resultados reales de doctores en México que transformaron su presencia digital.</p>
+
+    <div class="testimonials-grid">
+
+      <div class="testi-card animate-in">
+        <span class="testi-tag">Paquete Pro</span>
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-quote">En menos de una semana ya tenía mi sitio, mi correo profesional y mi perfil de Google listo. Antes me buscaban y no me encontraban — ahora recibo entre 8 y 10 citas nuevas al mes solo por Google Maps.</p>
+        <div class="testi-author">
+          <div class="testi-avatar av-blue">DR</div>
+          <div class="testi-info">
+            <span class="testi-name">Dr. Roberto Medina</span>
+            <span class="testi-role">Cardiólogo · Guadalajara, Jalisco</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="testi-card animate-in">
+        <span class="testi-tag">Paquete Base</span>
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-quote">Lo que más me gustó fue que no tuve que hacer nada. Ellos se encargaron de todo y solo me pidieron mis datos. Ahora mis pacientes agendan solos desde el celular y me llegan recordatorios automáticos. ¡Ya no tengo tantas citas perdidas!</p>
+        <div class="testi-author">
+          <div class="testi-avatar av-teal">DG</div>
+          <div class="testi-info">
+            <span class="testi-name">Dra. Gabriela Torres</span>
+            <span class="testi-role">Pediatra · León, Guanajuato</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="testi-card animate-in">
+        <span class="testi-tag">Branded Content</span>
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-quote">Contraté el contenido editorial y en dos meses mi sitio apareció en Google cuando alguien busca "ortopedista en Monterrey". Mis pacientes llegan sabiendo quién soy, qué hago y por qué deben consultarme. Eso no tiene precio.</p>
+        <div class="testi-author">
+          <div class="testi-avatar av-purple">DV</div>
+          <div class="testi-info">
+            <span class="testi-name">Dr. Alejandro Vargas</span>
+            <span class="testi-role">Ortopedista · Monterrey, N.L.</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FAQ ═══ -->
+<section class="section" id="faq">
+  <div class="section-inner">
+    <div class="section-label">Preguntas Frecuentes</div>
+    <h2 class="title">Todo lo que quieres saber<br>antes de empezar</h2>
+    <p class="title-desc">Respondemos las dudas más comunes de los médicos que están considerando Doctor Digital.</p>
+
+    <div class="faq-wrap">
+
+      <div class="faq-item animate-in">
+        <button class="faq-q">¿Necesito saber de tecnología para usar esto?
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-a">Para nada. Nuestro trabajo está pensado exactamente para médicos que no quieren lidiar con tecnología. Tú nos das tu información (nombre, especialidad, horarios, foto) y nosotros configuramos absolutamente todo. Cuando te entregamos tu solución, solo tienes que revisar y aprobar.</div>
+      </div>
+
+      <div class="faq-item animate-in">
+        <button class="faq-q">¿Mi información y la de mis pacientes quedan seguros?
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-a">Sí. Todo queda registrado a tu nombre: el dominio, el correo, el perfil de Google. Usamos plataformas líderes del mercado (GoDaddy, Google) con encriptación y respaldo automático. El sistema de citas no almacena historial clínico, solo datos de contacto para las notificaciones.</div>
+      </div>
+
+      <div class="faq-item animate-in">
+        <button class="faq-q">¿Qué pasa si quiero cancelar el servicio?
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-a">Sin penalidad ni cláusulas. Puedes cancelar cuando quieras con un aviso de 15 días. Además, como todo queda a tu nombre, te llevas tu dominio y tu historial de Google Maps contigo. No empiezas desde cero si decides continuar con otra agencia.</div>
+      </div>
+
+      <div class="faq-item animate-in">
+        <button class="faq-q">¿Cuánto tiempo tarda en estar listo todo?
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-a">Entre 3 y 5 días hábiles para el Paquete Base. El Paquete Pro puede tomar hasta 7 días hábiles porque incluye la configuración de redes sociales y la primera publicación. La verificación de Google Maps puede tomar hasta 14 días adicionales (es un proceso de Google, no nuestro).</div>
+      </div>
+
+      <div class="faq-item animate-in">
+        <button class="faq-q">¿Puedo cambiar de paquete después de contratar?
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-a">Claro que sí. Si empiezas con el Paquete Base y quieres subir al Pro, solo pagamos la diferencia en el siguiente ciclo. También puedes agregar el Branded Content en cualquier momento sin necesidad de cambiar de plan.</div>
+      </div>
+
+      <div class="faq-item animate-in">
+        <button class="faq-q">¿El sistema de citas reemplaza a mi recepcionista?
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-a">No necesariamente. El sistema de citas online complementa tu recepción: los pacientes pueden agendar fuera de horario (noches, fines de semana) sin que nadie tenga que contestar el teléfono. Tu recepcionista puede seguir gestionando las citas del día a día, pero ya no pierdes pacientes que llaman y no les contestan.</div>
+      </div>
+
+      <div class="faq-item animate-in">
+        <button class="faq-q">¿Los artículos de Branded Content los escribe un médico?
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-a">Los redacta nuestro equipo editorial especializado en salud, con base en información que tú nos proporcionas (o que revisamos de fuentes médicas confiables). Antes de publicar, tú revisas y apruebas cada artículo para asegurarte de que tu voz y criterio profesional estén reflejados correctamente.</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══ CTA ═══ -->
+<section id="contacto">
+  <div class="contact-grid">
+
+    <!-- Izquierda -->
+    <div class="contact-left animate-in">
+      <div class="section-label" style="color: rgba(255,255,255,.55);">Da el siguiente paso</div>
+      <h2>¿Listo para que más pacientes te encuentren?</h2>
+      <p>Cuéntanos sobre tu consultorio y te contactamos en menos de 24 horas. Sin compromisos.</p>
+      <div class="contact-trust">
+        <div class="ct2-item"><span>✔</span><span>Sin contratos ni permanencia</span></div>
+        <div class="ct2-item"><span>✔</span><span>Cancela cuando quieras</span></div>
+        <div class="ct2-item"><span>✔</span><span>Listo en 3–5 días hábiles</span></div>
+        <div class="ct2-item"><span>✔</span><span>Todo queda registrado a tu nombre</span></div>
+        <div class="ct2-item"><span>✔</span><span>Respuesta garantizada en menos de 24 hrs</span></div>
+      </div>
+    </div>
+
+    <!-- Formulario -->
+    <div class="animate-in">
+      <div class="contact-form-card">
+        <div id="formContent">
+          <div class="form-title">Solicita información gratuita</div>
+          <div class="form-sub">Te respondemos en menos de 24 horas hábiles</div>
+          <form id="contactForm" onsubmit="handleSubmit(event)">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="nombre">Nombre completo *</label>
+                <input type="text" id="nombre" placeholder="Dr. Juan Pérez" required />
+              </div>
+              <div class="form-group">
+                <label for="telefono">Teléfono / WhatsApp *</label>
+                <input type="tel" id="telefono" placeholder="(477) 000-0000" required />
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="email">Correo electrónico *</label>
+              <input type="email" id="email" placeholder="dr.perez@gmail.com" required />
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="especialidad">Especialidad *</label>
+                <select id="especialidad" required>
+                  <option value="" disabled selected>Selecciona</option>
+                  <option>Medicina General</option>
+                  <option>Pediatría</option>
+                  <option>Cardiología</option>
+                  <option>Ortopedia</option>
+                  <option>Ginecología</option>
+                  <option>Odontología</option>
+                  <option>Dermatología</option>
+                  <option>Nutriología</option>
+                  <option>Psiquiatría / Psicología</option>
+                  <option>Otra especialidad</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="ciudad">Ciudad *</label>
+                <input type="text" id="ciudad" placeholder="León, Gto." required />
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="paquete">Paquete de interés</label>
+              <select id="paquete">
+                <option value="" disabled selected>¿Cuál te interesa?</option>
+                <option>Paquete Base</option>
+                <option>Paquete Pro ⭐ (Recomendado)</option>
+                <option>Branded Content Médico</option>
+                <option>Aún no lo sé — quiero asesoría</option>
+              </select>
+            </div>
+            <button type="submit" class="btn-submit">
+              <span>Quiero que me contacten</span> →
+            </button>
+          </form>
+        </div>
+        <div class="form-success" id="formSuccess">
+          <div class="fs-icon">🎉</div>
+          <h3>¡Mensaje recibido!</h3>
+          <p>Te contactaremos en menos de 24 horas hábiles.<br>Mientras tanto, si tienes urgencia escríbenos por WhatsApp.</p>
+          <a href="https://wa.me/52" class="btn btn-blue" style="margin-top:1.5rem; justify-content:center;">💬 Abrir WhatsApp</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══ WHATSAPP FLOTANTE ═══ -->
+<a href="https://wa.me/52" class="wa-float" target="_blank" rel="noopener" title="Escríbenos por WhatsApp">
+  <span class="wa-icon">💬</span>
+  <span class="wa-label">¿Tienes dudas? WhatsApp</span>
+</a>
+
+<!-- ═══ FOOTER ═══ -->
+<footer>
+  <span class="footer-logo">Doctor<span>Digital</span></span>
+  <p style="margin-bottom:.4rem;">"Tu consultorio, visible para todos."</p>
+  <p>Presencia Digital para Médicos en México · Versión 1.0 · 2025</p>
+  <p style="margin-top:1rem; font-size:.75rem;">
+    <a href="mailto:contacto@doctordigital.mx">contacto@doctordigital.mx</a>
+  </p>
+</footer>
+
+<script>
+  /* ── Nav scroll ── */
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 60);
+  }, { passive: true });
+
+  /* ── Animate on scroll ── */
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('visible'), i * 80);
+        obs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.animate-in').forEach(el => obs.observe(el));
+
+  /* ── Hamburger menu ── */
+  const hamburger   = document.getElementById('hamburger');
+  const mobileMenu  = document.getElementById('mobileMenu');
+  const menuClose   = document.getElementById('menuClose');
+
+  function openMobileMenu() {
+    hamburger.classList.add('open');
+    mobileMenu.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeMobileMenu() {
+    hamburger.classList.remove('open');
+    mobileMenu.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  hamburger.addEventListener('click', () =>
+    mobileMenu.classList.contains('open') ? closeMobileMenu() : openMobileMenu()
+  );
+  menuClose.addEventListener('click', closeMobileMenu);
+
+  /* ── FAQ accordion ── */
+  document.querySelectorAll('.faq-q').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const item    = btn.parentElement;
+      const isOpen  = item.classList.contains('open');
+      // close all
+      document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+      // toggle clicked
+      if (!isOpen) item.classList.add('open');
+    });
+  });
+
+  /* ── Contact form ── */
+  function handleSubmit(e) {
+    e.preventDefault();
+    document.getElementById('formContent').style.display = 'none';
+    const success = document.getElementById('formSuccess');
+    success.style.display = 'block';
+    // Scroll suave al formulario
+    success.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+</script>
+
+</body>
+</html>
