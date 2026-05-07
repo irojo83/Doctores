@@ -1,3 +1,6 @@
+# Credenciales — NUNCA subir al repositorio
+config/db.php
+
 # Sistema
 .DS_Store
 Thumbs.db

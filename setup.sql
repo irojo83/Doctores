@@ -3,11 +3,11 @@
 --  Ejecutar una sola vez en phpMyAdmin o MySQL CLI
 -- ============================================================
 
-CREATE DATABASE IF NOT EXISTS doctores_digital
+CREATE DATABASE IF NOT EXISTS doctores
   CHARACTER SET utf8mb4
   COLLATE utf8mb4_unicode_ci;
 
-USE doctores_digital;
+USE doctores;
 
 -- Tabla principal de doctores
 CREATE TABLE IF NOT EXISTS doctores (
