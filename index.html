@@ -317,6 +317,18 @@
       animation: float 1.5s ease-in-out infinite;
     }
 
+    /* ─── ECG CANVAS ─── */
+    #ecgCanvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+      opacity: .55;
+    }
+    .hero > *:not(#ecgCanvas):not(.hero-bg) { position: relative; z-index: 2; }
+
     /* ─── SHARED SECTION ─── */
     .section { padding: 6rem 2rem; }
     .section-inner { max-width: 1160px; margin: 0 auto; }
@@ -1192,7 +1204,8 @@
 </div>
 
 <!-- ═══ HERO ═══ -->
-<section class="hero">
+<section class="hero" id="heroSection">
+  <canvas id="ecgCanvas"></canvas>
   <div class="hero-bg">
     <div class="hero-blob blob-1"></div>
     <div class="hero-blob blob-2"></div>
@@ -1933,6 +1946,119 @@
       if (!isOpen) item.classList.add('open');
     });
   });
+
+  /* ── ECG Canvas Effect ── */
+  (function () {
+    const canvas = document.getElementById('ecgCanvas');
+    const hero   = document.getElementById('heroSection');
+    if (!canvas || !hero) return;
+    const ctx = canvas.getContext('2d');
+
+    let W, H, baseY, targetY, mouseY = -1;
+    const buf = new Float32Array(3840);
+
+    function resize() {
+      W = canvas.width  = hero.offsetWidth;
+      H = canvas.height = hero.offsetHeight;
+      targetY = baseY = H * 0.68;
+    }
+    resize();
+    window.addEventListener('resize', resize, { passive: true });
+
+    // Mouse / touch tracking
+    hero.addEventListener('mousemove', e => {
+      const r = hero.getBoundingClientRect();
+      mouseY = e.clientY - r.top;
+    }, { passive: true });
+    hero.addEventListener('mouseleave', () => { mouseY = -1; });
+    hero.addEventListener('touchmove', e => {
+      const r = hero.getBoundingClientRect();
+      mouseY = e.touches[0].clientY - r.top;
+    }, { passive: true });
+
+    // ECG waveform shape — returns -1 to 1
+    function ecgShape(t) {
+      t = ((t % 1) + 1) % 1;
+      if (t < 0.08) return Math.sin(t / 0.08 * Math.PI) * 0.13;   // P wave
+      if (t < 0.36) return 0;
+      if (t < 0.40) return -0.18;                                   // Q
+      if (t < 0.44) return 1.0;                                     // R spike
+      if (t < 0.48) return -0.30;                                   // S
+      if (t < 0.52) return 0;
+      if (t < 0.65) return Math.sin((t - 0.52) / 0.13 * Math.PI) * 0.22; // T wave
+      return 0;
+    }
+
+    const SPEED  = 2.5;   // px / frame
+    const CYCLE  = 200;   // px per heartbeat cycle
+    const ERASE  = 55;    // blank zone ahead of scan head
+    let scan = 0, phase = 0;
+
+    function frame() {
+      // Ease baseY toward mouse (or center-ish)
+      targetY  = mouseY > 0 ? Math.max(80, Math.min(H - 80, mouseY)) : H * 0.68;
+      baseY   += (targetY - baseY) * 0.045;
+
+      // Advance scan head, write Y values into circular buffer
+      const steps = Math.ceil(SPEED);
+      for (let s = 0; s < steps; s++) {
+        const ix = Math.round(scan) % W;
+        phase += 1 / CYCLE;
+        buf[ix] = baseY - ecgShape(phase) * Math.min(H * 0.18, 100);
+        scan = (scan + 1) % W;
+      }
+
+      const head = Math.round(scan) % W;
+
+      // Clear
+      ctx.clearRect(0, 0, W, H);
+
+      // Draw line in up to 2 segments (handles circular wrap)
+      const startX = (head + ERASE) % W;
+
+      ctx.save();
+      ctx.lineWidth   = 2.2;
+      ctx.lineCap     = 'round';
+      ctx.lineJoin    = 'round';
+      ctx.strokeStyle = 'rgba(127, 232, 228, 0.9)';
+      ctx.shadowColor = '#7fe8e4';
+      ctx.shadowBlur  = 14;
+
+      function drawSegment(x0, x1) {
+        if (x1 <= x0) return;
+        ctx.beginPath();
+        ctx.moveTo(x0, buf[x0]);
+        for (let x = x0 + 1; x <= x1; x++) ctx.lineTo(x, buf[x % W]);
+        ctx.stroke();
+      }
+
+      if (startX < head) {
+        drawSegment(startX, head - 1);
+      } else {
+        drawSegment(startX, W - 1);
+        drawSegment(0, head - 1);
+      }
+
+      // Glowing dot at head
+      const dotY = buf[(head - 1 + W) % W];
+      ctx.beginPath();
+      ctx.arc(head, dotY, 4.5, 0, Math.PI * 2);
+      ctx.fillStyle   = '#7fe8e4';
+      ctx.shadowBlur  = 24;
+      ctx.fill();
+
+      // Subtle glow ring
+      ctx.beginPath();
+      ctx.arc(head, dotY, 9, 0, Math.PI * 2);
+      ctx.fillStyle  = 'rgba(127,232,228,0.15)';
+      ctx.shadowBlur = 0;
+      ctx.fill();
+
+      ctx.restore();
+      requestAnimationFrame(frame);
+    }
+    frame();
+  })();
 
   /* ── Contact form ── */
   function handleSubmit(e) {
