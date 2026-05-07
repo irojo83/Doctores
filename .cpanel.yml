@@ -1,0 +1,5 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/ae682s7ho0xv/doctores.digital/
+    - /bin/cp -R . $DEPLOYPATH
