@@ -384,65 +384,25 @@ $csrf = csrfToken();
     <!-- Resultados -->
     <div id="resultados"></div>
 
-    <!-- Confirmar registro -->
+    <!-- Confirmar selección -->
     <div id="confirmar">
       <div class="selected-domain-box">
-        <span class="name" id="confirmarNombre">—</span>
+        <div>
+          <div style="font-size:.8rem;color:var(--text-3);margin-bottom:4px;">DOMINIO SELECCIONADO</div>
+          <span class="name" id="confirmarNombre">—</span>
+        </div>
         <span class="price" id="confirmarPrecio">—</span>
       </div>
 
-      <p class="confirm-title">Datos del registrante del dominio</p>
-      <div class="form-grid">
-        <div class="form-group">
-          <label class="form-label">Nombre</label>
-          <input type="text" id="reg_nombre" class="form-input"
-                 placeholder="Juan"
-                 value="<?= htmlspecialchars(explode(' ', $nombre)[0] ?? '') ?>"/>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Apellido</label>
-          <input type="text" id="reg_apellido" class="form-input"
-                 placeholder="García López"/>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Correo electrónico</label>
-          <input type="email" id="reg_email" class="form-input"
-                 placeholder="dr@ejemplo.com"
-                 value="<?= htmlspecialchars($_SESSION['doctor_email'] ?? '') ?>"/>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Teléfono (+52...)</label>
-          <input type="tel" id="reg_telefono" class="form-input"
-                 placeholder="6568149228 o +52.6568149228"/>
-        </div>
-        <div class="form-group full">
-          <label class="form-label">Dirección</label>
-          <input type="text" id="reg_direccion" class="form-input"
-                 placeholder="Av. Hidalgo 123, Col. Centro"/>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Ciudad</label>
-          <input type="text" id="reg_ciudad" class="form-input"
-                 placeholder="Guadalajara"/>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Estado</label>
-          <input type="text" id="reg_estado" class="form-input"
-                 placeholder="JAL"/>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Código postal</label>
-          <input type="text" id="reg_cp" class="form-input"
-                 placeholder="44100"/>
-        </div>
-      </div>
+      <p style="font-size:.9rem;color:var(--text-2);margin-bottom:20px;">
+        ✅ Este dominio está disponible. Al continuar quedará asignado a tu consultorio digital.
+      </p>
 
       <div class="alert alert-error"   id="alertError"></div>
       <div class="alert alert-success" id="alertSuccess"></div>
-      <div class="alert alert-warning" id="alertWarning"></div>
 
       <button class="btn-register" id="btnRegistrar" onclick="registrarDominio()">
-        🌐 Registrar dominio
+        Continuar con este dominio →
       </button>
     </div>
   </div>
@@ -557,59 +517,32 @@ $csrf = csrfToken();
   async function registrarDominio() {
     if (!dominioSeleccionado) return;
 
-    // Recoger datos del formulario
-    const contacto = {
-      nameFirst:      document.getElementById('reg_nombre').value.trim(),
-      nameLast:       document.getElementById('reg_apellido').value.trim(),
-      email:          document.getElementById('reg_email').value.trim(),
-      phone:          document.getElementById('reg_telefono').value.trim(),
-      addressMailing: {
-        address1:   document.getElementById('reg_direccion').value.trim(),
-        city:       document.getElementById('reg_ciudad').value.trim(),
-        state:      document.getElementById('reg_estado').value.trim(),
-        postalCode: document.getElementById('reg_cp').value.trim(),
-        country:    'MX',
-      }
-    };
-
-    // Validar campos obligatorios
-    if (!contacto.nameFirst || !contacto.nameLast || !contacto.email || !contacto.phone) {
-      mostrarAlerta('error', '⚠️ Completa nombre, apellido, correo y teléfono.');
-      return;
-    }
-    // Normalizar teléfono en el cliente también
-    let tel = contacto.phone.replace(/[^0-9+]/g, '');
-    if (tel.length === 10) tel = '+52.' + tel;
-    else if (tel.length === 12 && tel.startsWith('52')) tel = '+52.' + tel.slice(2);
-    else if (tel.startsWith('+52') && !tel.includes('.')) tel = '+52.' + tel.slice(3);
-    contacto.phone = tel;
-
     const btn = document.getElementById('btnRegistrar');
     btn.disabled = true;
-    btn.textContent = '⏳ Registrando dominio…';
+    btn.textContent = '⏳ Verificando y guardando…';
     ocultarAlertas();
 
     try {
       const resp = await fetch('ajax/registrar.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ domain: dominioSeleccionado, contacto, csrf }),
+        body: JSON.stringify({ domain: dominioSeleccionado, csrf }),
       });
       const data = await resp.json();
 
       if (data.success) {
         mostrarAlerta('success',
-          `✅ ¡Dominio <strong>${dominioSeleccionado}</strong> registrado exitosamente! Redirigiendo…`);
-        setTimeout(() => { window.location.href = '../dashboard.php'; }, 2500);
+          `✅ ¡Dominio <strong>${dominioSeleccionado}</strong> asignado! Redirigiendo…`);
+        setTimeout(() => { window.location.href = '../dashboard.php'; }, 2000);
       } else {
-        mostrarAlerta('error', '❌ ' + (data.message || 'Error al registrar el dominio. Intenta de nuevo.'));
+        mostrarAlerta('error', '❌ ' + (data.message || 'Error al guardar el dominio.'));
         btn.disabled = false;
-        btn.textContent = '🌐 Registrar dominio';
+        btn.textContent = 'Continuar con este dominio →';
       }
     } catch(e) {
-      mostrarAlerta('error', '❌ Error de conexión. Verifica tu internet e intenta de nuevo.');
+      mostrarAlerta('error', '❌ Error de conexión. Intenta de nuevo.');
       btn.disabled = false;
-      btn.textContent = '🌐 Registrar dominio';
+      btn.textContent = 'Continuar con este dominio →';
     }
   }
 
