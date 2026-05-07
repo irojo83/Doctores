@@ -132,7 +132,7 @@ $csrf = csrfToken();
     .lp-blob-2 { width:300px; height:300px; background:#4ab3f4; opacity:.10; bottom:-80px; left:-60px; }
     #ecgLogin { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; opacity:.4; }
     .lp-logo { position:relative; z-index:1; }
-    .lp-logo img { height:36px; filter:brightness(0) invert(1); }
+    .lp-logo img { height:36px; }
     .lp-content { position:relative; z-index:1; animation:fadeUp .8s ease; }
     .lp-badge {
       display:inline-flex; align-items:center; gap:.5rem;
