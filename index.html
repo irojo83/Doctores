@@ -83,28 +83,17 @@
       gap: 2rem;
     }
     .nav-logo {
-      font-size: 1.3rem;
-      font-weight: 800;
       text-decoration: none;
-      color: var(--white);
-      letter-spacing: -0.5px;
       display: flex;
       align-items: center;
-      gap: .5rem;
-      transition: color .3s;
     }
-    nav.scrolled .nav-logo { color: var(--blue-dark); }
-    .logo-icon {
-      width: 34px; height: 34px;
-      background: var(--grad-main);
-      border-radius: 9px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: .9rem;
-      flex-shrink: 0;
+    .nav-logo img {
+      height: 38px;
+      width: auto;
+      filter: brightness(0) invert(1);
+      transition: filter .3s;
     }
-    nav.scrolled .logo-icon { box-shadow: var(--shadow-sm); }
-    .nav-logo span { color: #7fe8e4; transition: color .3s; }
-    nav.scrolled .nav-logo span { color: var(--teal); }
+    nav.scrolled .nav-logo img { filter: none; }
 
     .nav-links {
       display: flex;
@@ -816,14 +805,13 @@
       padding: 2.5rem 2rem;
       font-size: .83rem;
     }
-    footer .footer-logo {
-      font-size: 1.15rem;
-      font-weight: 800;
-      color: rgba(255,255,255,.85);
-      margin-bottom: .5rem;
-      display: block;
+    footer .footer-logo img {
+      height: 36px;
+      width: auto;
+      filter: brightness(0) invert(1);
+      opacity: .85;
+      margin-bottom: .6rem;
     }
-    footer .footer-logo span { color: #7fe8e4; }
     footer a { color: rgba(255,255,255,.45); text-decoration: none; }
     footer a:hover { color: rgba(255,255,255,.8); }
 
@@ -1115,6 +1103,7 @@
       padding: 2rem;
     }
     .mobile-menu.open { display: flex; animation: fadeIn .25s ease; }
+    .mobile-menu-logo { height: 44px; width: auto; margin-bottom: 1rem; }
     .mobile-menu a {
       font-size: 1.5rem;
       font-weight: 800;
@@ -1174,8 +1163,7 @@
 <nav id="nav">
   <div class="nav-inner">
     <a href="#" class="nav-logo">
-      <div class="logo-icon">🩺</div>
-      Doctores<span>.Digital</span>
+      <img src="logo.png" alt="Doctores.Digital" />
     </a>
     <ul class="nav-links">
       <li><a href="#about">Nosotros</a></li>
@@ -1193,6 +1181,7 @@
 <!-- ═══ MENÚ MÓVIL ═══ -->
 <div class="mobile-menu" id="mobileMenu">
   <button class="mm-close" id="menuClose" aria-label="Cerrar">✕</button>
+  <img src="logo.png" alt="Doctores.Digital" class="mobile-menu-logo" />
   <a href="#about"      onclick="closeMobileMenu()">Nosotros</a>
   <a href="#servicios"  onclick="closeMobileMenu()">Servicios</a>
   <a href="#paquetes"   onclick="closeMobileMenu()">Paquetes</a>
@@ -1887,7 +1876,7 @@
 
 <!-- ═══ FOOTER ═══ -->
 <footer>
-  <span class="footer-logo">Doctores<span>.Digital</span></span>
+  <span class="footer-logo"><img src="logo.png" alt="Doctores.Digital" /></span>
   <p style="margin-bottom:.4rem;">"Tu consultorio, visible para todos."</p>
   <p>Presencia Digital para Médicos en México · Versión 1.0 · 2025</p>
   <p style="margin-top:1rem; font-size:.75rem;">
