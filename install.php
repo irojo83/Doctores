@@ -82,11 +82,20 @@ $MIGRATIONS = [
             VALUES (
                 'Dr. Demo',
                 'demo@doctores.digital',
-                '$2y$12$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+                '$2y$12$s3S9GPINsIGPsGWWhF81fOMERGx5vAA6UDMsJZqec0RUI3qiqNPrq',
                 'Medicina General',
                 'Ciudad de México',
                 'pro'
             )
+        "],
+    ],
+
+    '005_fix_demo_password' => [
+        'desc' => 'Corregir contraseña del doctor demo (Doctor123)',
+        'sql'  => ["
+            UPDATE `doctores`
+               SET `password` = '\$2y\$12\$s3S9GPINsIGPsGWWhF81fOMERGx5vAA6UDMsJZqec0RUI3qiqNPrq'
+             WHERE `email` = 'demo@doctores.digital'
         "],
     ],
 
