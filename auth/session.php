@@ -7,7 +7,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_set_cookie_params([
         'lifetime' => 0,
         'path'     => '/',
-        'secure'   => false,   // cambiar a true en producción con HTTPS
+        'secure'   => true,    // HTTPS en producción (doctores.digital)
         'httponly' => true,
         'samesite' => 'Strict',
     ]);
