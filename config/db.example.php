@@ -6,12 +6,10 @@
 //  3. NUNCA subas db.php al repositorio (ya está en .gitignore)
 // ============================================================
 
-// En cPanel el nombre lleva el prefijo de tu usuario:
-// Ej: si tu usuario cPanel es "docmx", quedaría "docmx_doctores"
 define('DB_HOST',    'localhost');
-define('DB_NAME',    'CPANEL_USER_doctores');   // ← reemplaza CPANEL_USER
-define('DB_USER',    'CPANEL_USER_doctor');     // ← reemplaza CPANEL_USER
-define('DB_PASS',    'TU_PASSWORD_AQUI');
+define('DB_NAME',    'doctores');
+define('DB_USER',    'doctor');
+define('DB_PASS',    'TU_PASSWORD_AQUI');   // ← solo cambia esto
 define('DB_CHARSET', 'utf8mb4');
 
 function getDB(): PDO
