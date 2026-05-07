@@ -1,5 +1,6 @@
 # Credenciales — NUNCA subir al repositorio
 config/db.php
+config/godaddy.php
 
 # Sistema
 .DS_Store

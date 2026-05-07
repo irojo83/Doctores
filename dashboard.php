@@ -12,6 +12,12 @@ $db   = getDB();
 $stmt = $db->prepare('SELECT * FROM doctores WHERE id = ? LIMIT 1');
 $stmt->execute([$_SESSION['doctor_id']]);
 $doctor = $stmt->fetch();
+
+// Onboarding: si no tiene dominio, redirigir a configuración
+if (empty($doctor['dominio'])) {
+    header('Location: onboarding/dominio.php');
+    exit;
+}
 ?>
 <!DOCTYPE html>
 <html lang="es">

@@ -99,6 +99,15 @@ $MIGRATIONS = [
         "],
     ],
 
+    '006_add_dominio_to_doctores' => [
+        'desc' => 'Agregar columna dominio a tabla doctores',
+        'sql'  => ["
+            ALTER TABLE `doctores`
+                ADD COLUMN IF NOT EXISTS `dominio`      VARCHAR(150) DEFAULT NULL AFTER `paquete`,
+                ADD COLUMN IF NOT EXISTS `dominio_at`   DATETIME     DEFAULT NULL AFTER `dominio`
+        "],
+    ],
+
     // ── ESPACIO PARA MIGRACIONES FUTURAS ──────────────────
     // Ejemplo — agregar columna 'foto_url' a doctores:
     //
