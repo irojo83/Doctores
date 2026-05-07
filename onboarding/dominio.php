@@ -413,7 +413,7 @@ $csrf = csrfToken();
         <div class="form-group">
           <label class="form-label">Teléfono (+52...)</label>
           <input type="tel" id="reg_telefono" class="form-input"
-                 placeholder="+52.4771234567"/>
+                 placeholder="6568149228 o +52.6568149228"/>
         </div>
         <div class="form-group full">
           <label class="form-label">Dirección</label>
@@ -577,10 +577,12 @@ $csrf = csrfToken();
       mostrarAlerta('error', '⚠️ Completa nombre, apellido, correo y teléfono.');
       return;
     }
-    if (!contacto.phone.startsWith('+')) {
-      mostrarAlerta('error', '⚠️ El teléfono debe incluir el código de país. Ej: +52.4771234567');
-      return;
-    }
+    // Normalizar teléfono en el cliente también
+    let tel = contacto.phone.replace(/[^0-9+]/g, '');
+    if (tel.length === 10) tel = '+52.' + tel;
+    else if (tel.length === 12 && tel.startsWith('52')) tel = '+52.' + tel.slice(2);
+    else if (tel.startsWith('+52') && !tel.includes('.')) tel = '+52.' + tel.slice(3);
+    contacto.phone = tel;
 
     const btn = document.getElementById('btnRegistrar');
     btn.disabled = true;
