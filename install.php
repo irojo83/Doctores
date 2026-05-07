@@ -187,11 +187,19 @@ if ($dbOk && $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['run_migratio
             $pdo->beginTransaction();
             foreach ($migration['sql'] as $sql) {
                 $pdo->exec(trim($sql));
+                // MySQL hace commit implícito en DDL (CREATE/ALTER/DROP).
+                // Si ya no hay transacción activa, abrimos una nueva para
+                // poder registrar la migración de forma segura.
+                if (!$pdo->inTransaction()) {
+                    $pdo->beginTransaction();
+                }
             }
             // Registrar en tabla de migraciones
             $stmt = $pdo->prepare("INSERT INTO `_migraciones` (`nombre`) VALUES (?)");
             $stmt->execute([$name]);
-            $pdo->commit();
+            if ($pdo->inTransaction()) {
+                $pdo->commit();
+            }
             $results[$name] = ['status' => 'ok', 'msg' => 'Aplicada correctamente'];
         } catch (PDOException $e) {
             if ($pdo->inTransaction()) $pdo->rollBack();
