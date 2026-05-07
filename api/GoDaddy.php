@@ -73,10 +73,10 @@ class GoDaddy
     // ── Verificar disponibilidad de UN dominio ───────────────
     public function checkAvailability(string $domain): array
     {
+        // Nota: NO pasar forTransfer como bool — http_build_query lo convierte en ""
         $result = $this->request('GET', '/domains/available', [
             'domain'    => $domain,
             'checkType' => 'FAST',
-            'forTransfer' => false,
         ]);
 
         return [
@@ -92,11 +92,19 @@ class GoDaddy
     // ── Verificar disponibilidad de VARIOS dominios ──────────
     public function checkMultiple(array $domains): array
     {
+        // POST con array JSON de strings: ["domain1.com","domain2.mx"]
         $result = $this->request('POST', '/domains/available?checkType=FAST', $domains);
 
-        $output = [];
-        $items  = $result['domains'] ?? (isset($result[0]) ? $result : []);
+        // GoDaddy puede responder como array directo o con clave 'domains'
+        if (isset($result[0]['domain'])) {
+            $items = $result;
+        } elseif (isset($result['domains'])) {
+            $items = $result['domains'];
+        } else {
+            return []; // fallback a checkAvailability individual
+        }
 
+        $output = [];
         foreach ($items as $item) {
             $output[] = [
                 'domain'    => $item['domain']    ?? '',
