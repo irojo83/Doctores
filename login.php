@@ -29,12 +29,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!validateCsrf($_POST['csrf_token'] ?? '')) {
         $error = 'Error de seguridad. Recarga la página e intenta de nuevo.';
     } else {
-        $nombre   = trim($_POST['nombre']   ?? '');
         $email    = trim($_POST['email']    ?? '');
         $password = trim($_POST['password'] ?? '');
 
         // Validación básica
-        if (!$nombre || !$email || !$password) {
+        if (!$email || !$password) {
             $error = 'Por favor completa todos los campos.';
         } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $error = 'El correo electrónico no es válido.';
@@ -49,12 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             if ($doctor && password_verify($password, $doctor['password'])) {
                 // ¡Credenciales correctas!
-
-                // Verificar que el nombre coincida (case-insensitive)
-                if (mb_strtolower(trim($doctor['nombre'])) !== mb_strtolower($nombre)) {
-                    $error = 'El nombre no coincide con el registrado para ese correo.';
-                } else {
-                    // Actualizar last_login
+                // Actualizar last_login
                     $upd = $db->prepare('UPDATE doctores SET last_login = NOW() WHERE id = ?');
                     $upd->execute([$doctor['id']]);
 
@@ -73,11 +67,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     loginDoctor($doctor);
                     header('Location: dashboard.php');
                     exit;
-                }
             } else {
                 // Pequeño delay para dificultar fuerza bruta
                 usleep(400000); // 0.4 s
-                $error = 'Credenciales incorrectas. Verifica tu nombre, correo y contraseña.';
+                $error = 'Correo o contraseña incorrectos.';
             }
         }
     }
@@ -132,7 +125,7 @@ $csrf = csrfToken();
     .lp-blob-2 { width:300px; height:300px; background:#4ab3f4; opacity:.10; bottom:-80px; left:-60px; }
     #ecgLogin { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; opacity:.4; }
     .lp-logo { position:relative; z-index:1; }
-    .lp-logo img { height:36px; filter:brightness(0) invert(1); }
+    .lp-logo img { height:36px; }
     .lp-content { position:relative; z-index:1; animation:fadeUp .8s ease; }
     .lp-badge {
       display:inline-flex; align-items:center; gap:.5rem;
@@ -296,16 +289,6 @@ $csrf = csrfToken();
 
     <form method="POST" action="login.php" onsubmit="startLoading()" novalidate>
       <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf) ?>" />
-
-      <div class="form-group">
-        <label for="nombre">Nombre del doctor</label>
-        <div class="input-wrap">
-          <span class="input-icon">🩺</span>
-          <input type="text" id="nombre" name="nombre"
-                 placeholder="Dr. Juan Pérez" required autocomplete="name"
-                 value="<?= htmlspecialchars($_POST['nombre'] ?? '') ?>" />
-        </div>
-      </div>
 
       <div class="form-group">
         <label for="email">Correo electrónico</label>
